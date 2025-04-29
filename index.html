@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>GAJIKU - Slip Gaji</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f0f8ff;
+      text-align: center;
+    }
+
+    .logo {
+      max-width: 80px;
+      display: block;
+      margin: auto;
+    }
+
+    h1 {
+      color: #1e3a8a;
+      margin-bottom: 5px;
+    }
+
+    h2 {
+      color: #333;
+      margin-top: 0;
+    }
+
+    form, .slip {
+      max-width: 500px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    .slip {
+      display: none;
+    }
+
+    .slip h3 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .slip p {
+      margin: 5px 0;
+    }
+
+    .signature {
+      margin-top: 40px;
+      text-align: left;
+    }
+
+    .print-btn {
+      display: none;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .print-btn button {
+      background-color: #28a745;
+    }
+
+    @media print {
+      form, .print-btn {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <img src="https://upload.wikimedia.org/wikipedia/commons/4/46/Bitcoin.svg" alt="Logo GAJIKU" class="logo">
+  <h1>GAJIKU</h1>
+  <h2>Formulir Slip Gaji</h2>
+
+  <form id="gajiForm">
+    <label>Nama Pegawai:</label>
+    <input type="text" id="nama" required>
+
+    <label>Jabatan:</label>
+    <input type="text" id="jabatan" required>
+
+    <label>Gaji Pokok:</label>
+    <input type="number" id="gajiPokok" required>
+
+    <label>Tunjangan:</label>
+    <input type="number" id="tunjangan" required>
+
+    <label>Potongan:</label>
+    <input type="number" id="potongan" required>
+
+    <button type="submit">Cetak Slip</button>
+  </form>
+
+  <div class="slip" id="hasilSlip">
+    <h3>Slip Gaji</h3>
+    <p><strong>Nama:</strong> <span id="sNama"></span></p>
+    <p><strong>Jabatan:</strong> <span id="sJabatan"></span></p>
+    <p><strong>Gaji Pokok:</strong> Rp <span id="sGajiPokok"></span></p>
+    <p><strong>Tunjangan:</strong> Rp <span id="sTunjangan"></span></p>
+    <p><strong>Potongan:</strong> Rp <span id="sPotongan"></span></p>
+    <hr>
+    <p><strong>Total Gaji Diterima:</strong> Rp <span id="sTotal"></span></p>
+
+    <div class="signature">
+      <p>Mengetahui,</p>
+      <br><br>
+      <p>_______________________</p>
+      <p><em>Manajer HRD</em></p>
+    </div>
+  </div>
+
+  <div class="print-btn" id="printBtn">
+    <button onclick="downloadPDF()">Download PDF</button>
+  </div>
+
+  <script>
+    document.getElementById('gajiForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const nama = document.getElementById('nama').value;
+      const jabatan = document.getElementById('jabatan').value;
+      const gajiPokok = parseInt(document.getElementById('gajiPokok').value) || 0;
+      const tunjangan = parseInt(document.getElementById('tunjangan').value) || 0;
+      const potongan = parseInt(document.getElementById('potongan').value) || 0;
+      const total = gajiPokok + tunjangan - potongan;
+
+      document.getElementById('sNama').textContent = nama;
+      document.getElementById('sJabatan').textContent = jabatan;
+      document.getElementById('sGajiPokok').textContent = gajiPokok.toLocaleString('id-ID');
+      document.getElementById('sTunjangan').textContent = tunjangan.toLocaleString('id-ID');
+      document.getElementById('sPotongan').textContent = potongan.toLocaleString('id-ID');
+      document.getElementById('sTotal').textContent = total.toLocaleString('id-ID');
+
+      document.getElementById('hasilSlip').style.display = 'block';
+      document.getElementById('printBtn').style.display = 'block';
+    });
+
+    function downloadPDF() {
+      const slip = document.getElementById('hasilSlip');
+      const opt = {
+        margin:       0.5,
+        filename:     'Slip_Gaji_GAJIKU.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
+      html2pdf().from(slip).set(opt).save();
+    }
+  </script>
+
+</body>
+</html>
